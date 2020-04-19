@@ -1,16 +1,7 @@
-// TODO: move this to NODE in typescript
+import { IToken, IDice, IStreet, IRailRoad, IUtility } from "./interfaces";
+
 const TOTALSTEPS = 40;
 const JAILPOS = 10;
-interface IToken {
-  name: string;
-  currentPosition: number;
-  // return true if pass Go, else false
-  move(steps: number): boolean;
-  goToJail(): void;
-
-  // some chest/chance card moves token
-  goTo(pos: number): void;
-}
 
 class Token implements IToken {
   name: string;
@@ -42,40 +33,6 @@ class Token implements IToken {
   }
 }
 
-enum StreetStatus {
-  Unimproved,
-  OneHouse,
-  TwoHouse,
-  ThreeHouse,
-  FourHouse,
-  Hotel,
-  Mortgage,
-}
-
-enum RailRoadStatus {
-  OneRail,
-  TwoRail,
-  ThreeRail,
-  FourRail,
-  Mortgage,
-}
-
-enum UtilityStatus {
-  OneUtility,
-  TwoUtility,
-  Mortgage,
-}
-
-enum PlayerStatus {
-  Jail,
-  Free,
-}
-
-interface IDice {
-  // generate a random number from 2 to 12
-  throw(): number;
-}
-
 class Dice implements IDice {
   constructor(parameters) {}
 
@@ -85,28 +42,6 @@ class Dice implements IDice {
 
     return number1 + number2;
   }
-}
-
-interface IProperty {
-  name: string;
-  rent: number;
-  mortgage: number;
-  costs: number[];
-
-  gerRent(steps: number): number;
-  improveProperty(): void;
-  removeProperty(): void;
-  setMortgage(): void;
-}
-
-interface IStreet extends IProperty {
-  status: StreetStatus;
-  houseCost: number;
-  hotelCost: number;
-  minHouse4Hotel: number;
-
-  doubleRent(): void;
-  resetRent(): void;
 }
 
 class Street implements IStreet {
@@ -167,10 +102,6 @@ class Street implements IStreet {
   }
 }
 
-interface IRailRoad extends IProperty {
-  status: RailRoadStatus;
-}
-
 class RailRoad implements IRailRoad {
   name: string;
   rent: number;
@@ -208,9 +139,6 @@ class RailRoad implements IRailRoad {
     this.status = RailRoadStatus.Mortgage;
     this.rent = 0;
   }
-}
-interface IUtility extends IProperty {
-  status: UtilityStatus;
 }
 
 class Utility implements IUtility {
@@ -253,49 +181,4 @@ class Utility implements IUtility {
   setMortgage(): void {
     this.status = UtilityStatus.Mortgage;
   }
-}
-
-interface IPlayer {
-  name: string;
-  money: number;
-  token: IToken;
-  properties: IProperty[];
-  status: PlayerStatus;
-  totalWorth: number;
-}
-
-interface IChance {
-  name: string;
-}
-
-interface ICommunity {
-  name: string;
-}
-
-interface ITax {
-  name: string;
-  amount: number;
-}
-
-enum SpaceStatus {
-  Street,
-  Utility,
-  Rail,
-  Community,
-  Chance,
-  Tax,
-  ToJail,
-  JailOrVisit,
-  Parking,
-  Go,
-}
-
-interface ISpace {
-  name: string;
-  status: SpaceStatus;
-}
-
-interface Board {
-  spaces: ISpace[];
-  tokens: IToken[];
 }
