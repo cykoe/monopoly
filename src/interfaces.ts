@@ -2,14 +2,14 @@ export interface IToken {
   name: string;
   currentPosition: number;
 
+  // return a list of options for the user to select
   move(steps: number): boolean;
   goTo(pos: number): void;
   goToJail(): void;
 }
 
-// TODO: player throw a dice
 export interface IDice {
-  throw(): number;
+  throw(): [number, number];
 }
 
 export interface ISpace {
@@ -18,13 +18,15 @@ export interface ISpace {
 }
 
 export interface IProperty extends ISpace {
+  cost: number;
   rent: number;
   mortgage: number;
-  costs: number[];
+  // list of rents for each stage of the property
+  rents: number[];
 
-  gerRent(steps: number): number;
-  improveProperty(): void;
-  removeProperty(): void;
+  getRent(steps?: number): number;
+  upgrade(): void;
+  downgrade(): void;
   setMortgage(): void;
 }
 
@@ -32,7 +34,6 @@ export interface IStreet extends IProperty {
   status: StreetStatus;
   houseCost: number;
   hotelCost: number;
-  minHouse4Hotel: number;
 
   doubleRent(): void;
   resetRent(): void;
@@ -74,38 +75,51 @@ export interface IPlayer {
   properties: (IStreet | IRailRoad | IUtility)[];
   status: PlayerStatus;
   totalWorth: number;
+  dice: IDice;
+
+  // for payment
+  _tempAmount: number;
+
+  buy(prop: IStreet | IRailRoad | IUtility): void;
+  sell(prop: IStreet | IRailRoad | IUtility): void;
+  improve(prop: IStreet | IRailRoad | IUtility): void;
+  createToken(name: string): void;
+
+  // methods chaining to pay rent
+  pay(amount: number): this;
+  toRent(player: IPlayer): void;
+  toTax(): void;
+
+  throwDice(): [number, number];
+
+  goToJail(): void;
+  freeFromJail(): void;
+
+  drawChance(chance: IChance): void;
+  drawCommunity(community: ICommunity): void;
+
+  collectSalary(): void;
+
+  // TODO: auction for unwanted property
 }
 
+export type Space =
+  | IStreet
+  | IRailRoad
+  | IUtility
+  | IChance
+  | ICommunity
+  | ITax
+  | IJail
+  | IToJail
+  | IParking
+  | IGo;
+
 export interface IBoard {
-  properties: (
-    | IStreet
-    | IRailRoad
-    | IUtility
-    | IChance
-    | ICommunity
-    | ITax
-    | IJail
-    | IToJail
-    | IParking
-    | IGo
-  )[];
-  tokens: IToken[];
+  spaces: Space[];
 
   // private methods in constructor
-  createProperties(
-    obj: any
-  ): (
-    | IStreet
-    | IRailRoad
-    | IUtility
-    | IChance
-    | ICommunity
-    | ITax
-    | IJail
-    | IToJail
-    | IParking
-    | IGo
-  )[];
+  createSpaces(obj: any): void;
 }
 
 export interface IPrePlayer {
@@ -117,6 +131,10 @@ export interface IGame {
   players: IPlayer[];
   currentPlayer: IPlayer;
   board: IBoard;
+  dice: IDice;
+  prePlayers: IPrePlayer[];
+  numOfPlayers: number;
+  tracker: number;
 
   // proceed to the next player
   next(): void;
@@ -126,13 +144,14 @@ export interface IGame {
   restart(): void;
 
   // private methods used in prepare()
-  createBoard(): IBoard;
-  getTokenNames: string[];
-  createPlayers(players: IPrePlayer[]): IPlayer[];
+  createBoard(): void;
+  getTokenNames(): string[];
+  createPlayers(players: IPrePlayer[]): void;
   setPlayerOrders(): void;
 }
 
 export enum StreetStatus {
+  Unclaimed,
   Unimproved,
   OneHouse,
   TwoHouse,
@@ -143,6 +162,7 @@ export enum StreetStatus {
 }
 
 export enum RailRoadStatus {
+  Unclaimed,
   OneRail,
   TwoRail,
   ThreeRail,
@@ -151,6 +171,7 @@ export enum RailRoadStatus {
 }
 
 export enum UtilityStatus {
+  Unclaimed,
   OneUtility,
   TwoUtility,
   Mortgage,
