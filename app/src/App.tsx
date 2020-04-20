@@ -6,7 +6,6 @@ const ENDPOINT = "localhost:7000";
 
 function App() {
   const socket = io(ENDPOINT);
-  socket.emit("message", "HELLO WORLD");
   return (
     <div className="App">
       <header className="App-header">
