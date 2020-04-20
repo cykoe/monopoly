@@ -7,7 +7,9 @@
     "start": "node dist/index",
     "webpack": "webpack --config webpack.config.ts",
     "test": "jest",
-    "coverage": "jest --coverage"
+    "coverage": "jest --coverage",
+    "lint": "tslint src/**/*.ts{,x}",
+    "lint-fix": "tslint --fix src/monopoly.ts"
   },
   "keywords": [],
   "author": "",
@@ -18,7 +20,8 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "helmet": "^3.22.0",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.3.0",
+    "tslint": "^6.1.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.6",

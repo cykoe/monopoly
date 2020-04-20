@@ -41,7 +41,7 @@ const TOKENS = [
 
 function shuffle(array: any) {
   for (let i = array.length - 1; i > 0; i--) {
-    let j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
   }
 }
@@ -82,8 +82,8 @@ class Dice implements IDice {
   constructor() {}
 
   throw(): [number, number] {
-    let number1 = Math.floor(Math.random() * 6);
-    let number2 = Math.floor(Math.random() * 6);
+    const number1 = Math.floor(Math.random() * 6);
+    const number2 = Math.floor(Math.random() * 6);
 
     return [number1, number2];
   }
