@@ -20,13 +20,32 @@ if (!process.env.PORT) {
 const PORT: number = parseInt(process.env.PORT as string, 10);
 
 const app = express();
+app.use(helmet());
+app.use(cors());
+app.use(express.json());
+const http = require("http").Server(app);
+
+// set up socket.io and bind it to our
+// http server.
+const io = require("socket.io")(http);
 
 /**
  * Server Activation
  */
-
-const server = app.listen(PORT, () => {
+const server = http.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
+});
+
+app.use(express.static("./app/build"));
+
+// whenever a user connects on port 3000 via
+// a websocket, log that a user has connected
+io.on("connection", function (socket: any) {
+  console.log("a user connected");
+  // whenever we receive a 'message' we log it out
+  socket.on("message", function (message: any) {
+    console.log(message);
+  });
 });
 
 /**
