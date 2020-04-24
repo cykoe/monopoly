@@ -1,5 +1,5 @@
-import { IToken } from "../src/gameplay/shared/interfaces";
-import { Token } from "../src/gameplay/token";
+import { IToken } from "../../src/gameplay/shared/interfaces";
+import { Token } from "../../src/gameplay/token";
 
 describe("Token", () => {
   let token: IToken;

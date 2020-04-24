@@ -11,12 +11,18 @@ export class RailRoad implements IRailRoad {
 
   constructor(parameters: any) {
     this.status = RailRoadStatus.Unclaimed;
-    this.rent = parameters.rent;
+    // Set rent to that in one railroad status
     this.name = parameters.name;
     this.mortgage = parameters.mortgage;
     this.rents = parameters.rents;
+    this.rent = parameters.rents[0];
     this.cost = parameters.cost;
     this.type = SpaceType.Rail;
+  }
+
+  purchase(): void {
+    this.status = RailRoadStatus.OneRail;
+    this.rent = this.rents[1];
   }
 
   getRent(): number {

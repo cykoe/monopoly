@@ -25,6 +25,7 @@ export interface IProperty extends ISpace {
   rents: number[];
 
   getRent(steps?: number): number;
+  purchase(): void;
   upgrade(): void;
   downgrade(): void;
   setMortgage(): void;

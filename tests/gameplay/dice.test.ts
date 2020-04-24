@@ -1,4 +1,4 @@
-import { Dice } from "../src/game/dice";
+import { Dice } from "../../src/gameplay/dice";
 
 describe("Dice", () => {
   test("throw works", () => {
