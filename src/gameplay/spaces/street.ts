@@ -13,15 +13,19 @@ export class Street implements IStreet {
 
   constructor(parameters: any) {
     this.name = parameters.name;
-    this.rent = parameters.rent;
+    this.rent = parameters.rents[0];
     this.type = SpaceType.Street;
     this.mortgage = parameters.mortgage;
     this.status = StreetStatus.Unclaimed;
     this.houseCost = parameters.houseCost;
     this.hotelCost = parameters.hotelCost;
     this.cost = parameters.cost;
-    // rents in an ordered array with 6 elements from unimproved to hotel
     this.rents = parameters.rents;
+  }
+
+  purchase(): void {
+    this.status = StreetStatus.Unimproved;
+    this.rent = this.rents[1];
   }
 
   getRent(): number {
@@ -55,6 +59,8 @@ export class Street implements IStreet {
   }
 
   resetRent(): void {
-    this.rent = this.rents[StreetStatus.Unimproved];
+    if (this.status === StreetStatus.Unimproved) {
+      this.rent = this.rents[StreetStatus.Unimproved];
+    }
   }
 }

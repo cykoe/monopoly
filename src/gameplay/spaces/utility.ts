@@ -19,6 +19,11 @@ export class Utility implements IUtility {
     this.type = SpaceType.Utility;
   }
 
+  purchase(): void {
+    this.status = UtilityStatus.OneUtility;
+    this.rent = this.rents[UtilityStatus.OneUtility];
+  }
+
   getRent(steps: number): number {
     if (this.status !== UtilityStatus.Mortgage) {
       // rent is equal to x amount times the dice rolls
@@ -32,12 +37,14 @@ export class Utility implements IUtility {
   upgrade(): void {
     if (this.status < UtilityStatus.TwoUtility) {
       this.status++;
+      this.rent = this.rents[this.status];
     }
   }
 
   downgrade(): void {
     if (this.status > UtilityStatus.OneUtility) {
       this.status--;
+      this.rent = this.rents[this.status];
     }
   }
 

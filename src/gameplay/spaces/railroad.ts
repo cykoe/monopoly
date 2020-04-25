@@ -22,7 +22,7 @@ export class RailRoad implements IRailRoad {
 
   purchase(): void {
     this.status = RailRoadStatus.OneRail;
-    this.rent = this.rents[1];
+    this.rent = this.rents[RailRoadStatus.OneRail];
   }
 
   getRent(): number {
