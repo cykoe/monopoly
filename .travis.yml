@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+  - lts/*
+if: branch = master
+cache:
+    - node_modules
+install:
+  - npm install
+script:
+  - npm test
+
+
+
