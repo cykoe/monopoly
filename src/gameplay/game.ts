@@ -1,6 +1,7 @@
 import { IGame, IPlayer, IBoard, IDice, IPrePlayer } from "./shared/interfaces";
 import { Dice } from "./dice";
 import { Board } from "./board";
+import { Player } from "./player";
 
 const TOKENS = [
   "Scottish Terrier",

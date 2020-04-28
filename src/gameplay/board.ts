@@ -1,4 +1,4 @@
-import * as data from "./assets/board.json";
+import * as data from "../assets/board.json";
 import {
   IStreet,
   IRailRoad,
@@ -35,11 +35,11 @@ export class Board implements IBoard {
   spaces: Space[] = [];
 
   constructor(parameters: any) {
-    this.createSpaces(parameters.spaces);
+    this.createSpaces();
   }
 
   // TODO: load board data
-  createSpaces(obj: any): void {
+  createSpaces(): void {
     console.log(data);
   }
 }
