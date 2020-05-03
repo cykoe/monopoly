@@ -1,6 +1,8 @@
-import { RailRoadStatus, SpaceType, IRailRoad } from "../shared/interfaces";
+import { v4 as uuidv4 } from "uuid";
+import { RailRoadStatus, SpaceType, IProperty } from "../shared/interfaces";
 
 export class RailRoad implements IRailRoad {
+  id: string;
   name: string;
   type: SpaceType;
   cost: number;
@@ -10,6 +12,7 @@ export class RailRoad implements IRailRoad {
   rents: number[];
 
   constructor(parameters: any) {
+    this.id = uuidv4();
     this.status = RailRoadStatus.Unclaimed;
     // Set rent to that in one railroad status
     this.name = parameters.name;
@@ -47,4 +50,8 @@ export class RailRoad implements IRailRoad {
     this.status = RailRoadStatus.Mortgage;
     this.rent = this.rents[RailRoadStatus.Unclaimed];
   }
+}
+
+export interface IRailRoad extends IProperty {
+  status: RailRoadStatus;
 }

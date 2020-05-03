@@ -1,6 +1,8 @@
-import { UtilityStatus, SpaceType, IUtility } from "../shared/interfaces";
+import { v4 as uuidv4 } from "uuid";
+import { UtilityStatus, SpaceType, IProperty } from "../shared/interfaces";
 
 export class Utility implements IUtility {
+  id: string;
   name: string;
   rent: number;
   mortgage: number;
@@ -10,6 +12,7 @@ export class Utility implements IUtility {
   type: SpaceType;
 
   constructor(parameters: any) {
+    this.id = uuidv4();
     this.status = UtilityStatus.Unclaimed;
     this.rent = parameters.rent;
     this.name = parameters.name;
@@ -52,4 +55,8 @@ export class Utility implements IUtility {
     this.status = UtilityStatus.Mortgage;
     this.rent = this.rents[UtilityStatus.Unclaimed];
   }
+}
+
+export interface IUtility extends IProperty {
+  status: UtilityStatus;
 }

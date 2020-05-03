@@ -1,6 +1,8 @@
-import { StreetStatus, SpaceType, IStreet } from "../shared/interfaces";
+import { v4 as uuidv4 } from "uuid";
+import { StreetStatus, SpaceType, IProperty } from "../shared/interfaces";
 
 export class Street implements IStreet {
+  id: string;
   name: string;
   type: SpaceType;
   rent: number;
@@ -12,6 +14,7 @@ export class Street implements IStreet {
   rents: number[];
 
   constructor(parameters: any) {
+    this.id = uuidv4();
     this.name = parameters.name;
     this.rent = parameters.rents[0];
     this.type = SpaceType.Street;
@@ -63,4 +66,13 @@ export class Street implements IStreet {
       this.rent = this.rents[StreetStatus.Unimproved];
     }
   }
+}
+
+export interface IStreet extends IProperty {
+  status: StreetStatus;
+  houseCost: number;
+  hotelCost: number;
+
+  doubleRent(): void;
+  resetRent(): void;
 }

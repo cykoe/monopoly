@@ -1,48 +1,57 @@
-import {
-  IPlayer,
-  IToken,
-  IStreet,
-  IRailRoad,
-  IUtility,
-  PlayerStatus,
-  IDice,
-  IChance,
-  ICommunity,
-} from "./shared/interfaces";
-import { Token } from "./token";
+import { v4 as uuidv4 } from "uuid";
+import { PlayerStatus, IDice, IChance, ICommunity } from "./shared/interfaces";
+import {TOTAL_STEPS, GO_MONEY, JAIL} from "./board";
+
 
 export class Player implements IPlayer {
+  id: string;
   name: string;
   money: number;
-  token: IToken;
-  properties: (IStreet | IRailRoad | IUtility)[];
+  token: string;
   status: PlayerStatus;
-  totalWorth: number;
+  netWorth: number;
   dice: IDice;
-
-  // for payment
+  position: number;
   _tempAmount: number;
+  _tempDice: [number, number];
 
   constructor(parameters: any) {
+    this.id = uuidv4();
     this.name = parameters.name;
     this.money = parameters.money;
-    this.token = {} as IToken;
-    this.properties = [];
+    this.token = parameters.token;
+    // Initialize player as free
     this.status = PlayerStatus.Free;
-    this.totalWorth = 0;
+    this.netWorth = 0;
     this._tempAmount = 0;
+    this._tempDice = [0, 0];
     this.dice = parameters.dice;
 
-    this.createToken(parameters.token);
+    // Position ranges from 0 - 39
+    this.position = 0;
   }
 
-  buy(prop: IStreet | IRailRoad | IUtility): void {}
-  sell(prop: IStreet | IRailRoad | IUtility): void {}
-  improve(prop: IStreet | IRailRoad | IUtility): void {}
+  // Return true if the token passes Go
+  move(): boolean {
+    this.position += this._tempDice[0] + this._tempDice[1];
 
-  createToken(name: string): void {
-    const token = new Token({ name });
-    this.token = token;
+    // Collect salary after passing Go
+    if (this.position > TOTAL_STEPS) {
+      this.position -= TOTAL_STEPS;
+
+      // Since it overflows, it means the players pases Go
+      this.collectSalary();
+      return true;
+    }
+
+    // Go to jail
+    if(this.position == JAIL) {
+      this.goToJail();
+      return false;
+    }
+
+    // The player hasn't passed Go
+    return false;
   }
 
   pay(amount: number): this {
@@ -50,33 +59,107 @@ export class Player implements IPlayer {
     return this;
   }
 
-  toRent(player: IPlayer): void {
+  player(player: IPlayer): boolean {
     if (this.money > this._tempAmount) {
       this.money -= this._tempAmount;
       player.money += this._tempAmount;
+      return true;
     }
+    return false;
   }
 
-  toTax(): void {
+  getSnapshot(): IPlayerSnapshot {
+    return {
+      name: this.name,
+      money: this.money,
+      netWorth: this.netWorth,
+      status: this.status,
+      position: this.position,
+    };
+  }
+
+  tax(): boolean {
     if (this.money > this._tempAmount) {
       this.money -= this._tempAmount;
+      return true;
     }
+    return false;
   }
 
-  throwDice(): [number, number] {
-    return this.dice.throw();
+  throwDice(steps?: number): this {
+    // for debugging
+    if (steps) {
+      this._tempDice = [1, steps - 1];
+    } else {
+      this._tempDice = this.dice.throw();
+    }
+    return this;
   }
 
-  goToJail(): void {
+  private goToJail(): void {
     this.status = PlayerStatus.Jail;
   }
 
-  freeFromJail(): void {
+  private freeFromJail(): void {
     this.status = PlayerStatus.Free;
+  }
+
+  // Collect salary after passing go
+  private collectSalary(): void {
+    this.money += GO_MONEY;
   }
 
   drawChance(chance: IChance): void {}
   drawCommunity(community: ICommunity): void {}
+}
 
-  collectSalary(): void {}
+export interface IPlayer {
+  id: string;
+  name: string;
+  // Cash value the player currently holds
+  money: number;
+  token: string;
+  status: PlayerStatus;
+  // All assets the players owns, including cash, houses, etc.
+  netWorth: number;
+  dice: IDice;
+  // Current position that the player is at on the board
+  position: number;
+
+  // Amount of payment for either a player, tax, or cards
+  _tempAmount: number;
+
+  // Dice thrown
+  _tempDice: [number, number];
+
+  // Methods to chain for paying a player, tax, or cards
+  pay(amount: number): this;
+
+  // Move a player's position on the board
+  move(): boolean;
+
+  // True if transaction is successful
+  player(player: IPlayer): boolean;
+
+  // True if transaction is successful
+  tax(): boolean;
+
+  // Returns two values from two dice throw
+  throwDice(steps?: number): this;
+
+  drawChance(chance: IChance): void;
+  drawCommunity(community: ICommunity): void;
+
+  // Get an overall status of the player
+  getSnapshot(): IPlayerSnapshot;
+
+  // TODO: auction for unwanted property
+}
+
+export interface IPlayerSnapshot {
+  name: string;
+  money: number;
+  netWorth: number;
+  status: PlayerStatus;
+  position: number;
 }
