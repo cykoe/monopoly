@@ -7,7 +7,7 @@
     "start": "node dist/index",
     "webpack": "webpack --config webpack.config.ts",
     "test": "jest",
-    "coverage": "jest --coverage",
+    "coverage": "jest --coverage && cat ./coverage/lcov.info | coveralls",
     "lint": "tslint src/**/*.ts{,x}",
     "lint-fix": "tslint --fix src/monopoly.ts"
   },
@@ -32,6 +32,7 @@
     "@types/helmet": "0.0.45",
     "@types/jest": "^25.2.1",
     "@types/node": "^13.11.1",
+    "coveralls": "^3.1.0",
     "jest": "^25.4.0",
     "ts-jest": "^25.4.0",
     "ts-loader": "^7.0.0",
