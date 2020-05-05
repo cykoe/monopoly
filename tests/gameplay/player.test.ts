@@ -59,7 +59,7 @@ describe("Player", () => {
   });
 
   test("throwDice", () => {
-    player1.throwDice();
+    player1.throw();
     const diceResult = player1._tempDice;
 
     expect(diceResult).toHaveLength(2);
@@ -71,7 +71,7 @@ describe("Player", () => {
 
   test("throw the dice and move", () => {
     const player1StartPosition = player1.position;
-    player1.throwDice().move();
+    player1.throw().move();
     const diceResult = player1._tempDice;
 
     expect(player1.position).toEqual(
@@ -80,7 +80,7 @@ describe("Player", () => {
   });
 
   test("Go to jail after stepping on Go to Jail", () => {
-    player1.throwDice(JAIL).move();
+    player1.throw(JAIL).move();
 
     expect(player1.status).toEqual(PlayerStatus.Jail);
   });
@@ -96,7 +96,7 @@ describe("Player", () => {
 
   test("Collect salary after passing Go", () => {
     // Purposefully let player1 moves around the board to collect salary
-    player1.throwDice(TOTAL_STEPS + 1).move();
+    player1.throw(TOTAL_STEPS + 1).move();
 
     expect(player1.money).toEqual(player_param.money + GO_MONEY);
   });

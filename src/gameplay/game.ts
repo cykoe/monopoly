@@ -1,7 +1,8 @@
-import { IDice, IProperty } from "./shared/interfaces";
+import { IDice, IProperty, SpaceType } from "./shared/interfaces";
 import { Dice } from "./dice";
 import { Board, IBoard, Property } from "./board";
 import { Player, IPlayer } from "./player";
+import { IStreet } from "./spaces/street";
 
 export const TOKENS = [
   "Scottish Terrier",
@@ -39,7 +40,7 @@ export class Game implements IGame {
   propToPlayer: PropToPlayer;
 
   constructor(parameters: any) {
-    if (parameters.prePlayers < 2 || parameters.prePlayers > 8) {
+    if (parameters.prePlayers.length < 2 || parameters.prePlayers.length > 8) {
       throw new Error("Players number must be 2-8");
     }
     this.dice = new Dice();
@@ -61,15 +62,26 @@ export class Game implements IGame {
     this.setPlayerOrders();
   }
 
-  playerBuyProp(player: IPlayer, prop: Property): boolean {
+  playerBuyProp(player: IPlayer): boolean {
+    // Locate the property the player is currently on
+    const prop: Property = this.board.spaces[player.position] as Property;
+
+    // If the player doesn't have the money to purchase the property,
+    // or the property is already owned by somebody else, then this
+    // transaction is failed
     if (player.money < prop.cost || this.propToPlayer[prop.id]) {
       return false;
     }
 
+    // Initialize the player's properties to an empty array
     if (!this.playerToProps[player.id]) {
       this.playerToProps[player.id] = [];
     }
 
+    // Deduct property cost from the player
+    player.money -= prop.cost;
+
+    // List the property to the player
     this.playerToProps[player.id].push(prop);
     this.propToPlayer[prop.id] = player;
 
@@ -77,6 +89,53 @@ export class Game implements IGame {
     prop.upgrade();
 
     // Return true for successful transaction
+    return true;
+  }
+
+  playerUpgradeProp(player: IPlayer): boolean {
+    // Locate the property the player is currently on
+    const prop: Property = this.board.spaces[player.position] as Property;
+
+    // Check if the property is already owned by another player
+    if (this.propToPlayer[prop.id] !== player) {
+      return false;
+    }
+
+    // Only Street has house to upgrade
+    if (prop.type === SpaceType.Street) {
+      // Check if the player has the money to upgrade
+      if (player.money < (prop as IStreet).houseCost) {
+        return false;
+      } else {
+        // Deduct house cost from the player
+        player.money -= (prop as IStreet).houseCost;
+      }
+    }
+
+    // Upgrade the property
+    prop.upgrade();
+
+    return true;
+  }
+
+  playerDowngradeProp(player: IPlayer): boolean {
+    // Locate the property the player is currently on
+    const prop: Property = this.board.spaces[player.position] as Property;
+
+    // Check if the property is already owned by another player
+    if (this.propToPlayer[prop.id] !== player) {
+      return false;
+    }
+
+    // Only Street has house to downgrade
+    if (prop.type === SpaceType.Street) {
+      // Add house sell to the player
+      player.money += (prop as IStreet).houseSell;
+    }
+
+    // Upgrade the property
+    prop.downgrade();
+
     return true;
   }
 
@@ -135,7 +194,9 @@ export interface IGame {
   numOfPlayers: number;
   tracker: number;
 
-  playerBuyProp(player: IPlayer, prop: Property): boolean;
+  playerBuyProp(player: IPlayer): boolean;
+  playerUpgradeProp(player: IPlayer): boolean;
+  playerDowngradeProp(player: IPlayer): boolean;
 
   // Proceed to the next player
   next(): void;

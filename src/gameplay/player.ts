@@ -86,7 +86,7 @@ export class Player implements IPlayer {
     return false;
   }
 
-  throwDice(steps?: number): this {
+  throw(steps?: number): this {
     // for debugging
     if (steps) {
       this._tempDice = [1, steps - 1];
@@ -145,7 +145,7 @@ export interface IPlayer {
   tax(): boolean;
 
   // Returns two values from two dice throw
-  throwDice(steps?: number): this;
+  throw(steps?: number): this;
 
   drawChance(chance: IChance): void;
   drawCommunity(community: ICommunity): void;

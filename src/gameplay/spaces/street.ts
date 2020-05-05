@@ -9,6 +9,7 @@ export class Street implements IStreet {
   mortgage: number;
   status: StreetStatus;
   houseCost: number;
+  houseSell: number;
   hotelCost: number;
   cost: number;
   rents: number[];
@@ -20,10 +21,11 @@ export class Street implements IStreet {
     this.type = SpaceType.Street;
     this.mortgage = parameters.mortgage;
     this.status = StreetStatus.Unclaimed;
-    this.houseCost = parameters.houseCost;
-    this.hotelCost = parameters.hotelCost;
-    this.cost = parameters.cost;
-    this.rents = parameters.rents;
+    this.houseCost = Number(parameters.houseCost);
+    this.houseSell = Number(parameters.houseCost) / 2;
+    this.hotelCost = Number(parameters.hotelCost);
+    this.cost = Number(parameters.cost);
+    this.rents = parameters.rents.map((r: number) => Number(r));
   }
 
   purchase(): void {
@@ -71,6 +73,7 @@ export class Street implements IStreet {
 export interface IStreet extends IProperty {
   status: StreetStatus;
   houseCost: number;
+  houseSell: number;
   hotelCost: number;
 
   doubleRent(): void;
