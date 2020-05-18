@@ -16,7 +16,7 @@ describe("Street", () => {
     street.purchase();
 
     expect(street.status).toEqual(StreetStatus.Unimproved);
-    expect(street.rent).toEqual(street.rents[StreetStatus.Unimproved]);
+    expect(street._rent).toEqual(street.rents[StreetStatus.Unimproved]);
   });
 
   test("getRent()", () => {
@@ -24,42 +24,42 @@ describe("Street", () => {
   });
 
   test("upgrade()", () => {
-    street.rent = street.rents[StreetStatus.Unimproved];
+    street._rent = street.rents[StreetStatus.Unimproved];
     street.status = StreetStatus.Unimproved;
     street.upgrade();
 
     expect(street.status).toEqual(StreetStatus.OneHouse);
-    expect(street.rent).toEqual(street.rents[StreetStatus.OneHouse]);
+    expect(street._rent).toEqual(street.rents[StreetStatus.OneHouse]);
   });
 
   test("downgrade()", () => {
-    street.rent = street.rents[StreetStatus.Hotel];
+    street._rent = street.rents[StreetStatus.Hotel];
     street.status = StreetStatus.Hotel;
     street.downgrade();
 
     expect(street.status).toEqual(StreetStatus.FourHouse);
-    expect(street.rent).toEqual(street.rents[StreetStatus.FourHouse]);
+    expect(street._rent).toEqual(street.rents[StreetStatus.FourHouse]);
   });
 
   test("setMortgage()", () => {
     street.setMortgage();
 
     expect(street.status).toEqual(StreetStatus.Mortgage);
-    expect(street.rent).toEqual(street.rents[StreetStatus.Mortgage]);
+    expect(street._rent).toEqual(street.rents[StreetStatus.Mortgage]);
   });
 
   test("doubleRent", () => {
-    street.rent = street.rents[StreetStatus.Unimproved];
+    street._rent = street.rents[StreetStatus.Unimproved];
     street.status = StreetStatus.Unimproved;
     street.doubleRent();
 
-    expect(street.rent).toEqual(street.rents[StreetStatus.Unimproved] * 2);
+    expect(street._rent).toEqual(street.rents[StreetStatus.Unimproved] * 2);
   });
 
   test("resetRent", () => {
     street.status = StreetStatus.Unimproved;
     street.resetRent();
 
-    expect(street.rent).toEqual(street.rents[StreetStatus.Unimproved]);
+    expect(street._rent).toEqual(street.rents[StreetStatus.Unimproved]);
   });
 });

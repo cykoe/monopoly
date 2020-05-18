@@ -59,6 +59,10 @@ export class Player implements IPlayer {
     return this;
   }
 
+  getDiceThrow(): number {
+    return this._tempDice[0] + this._tempDice[1];
+  }
+
   player(player: IPlayer): boolean {
     if (this.money > this._tempAmount) {
       this.money -= this._tempAmount;
@@ -131,6 +135,9 @@ export interface IPlayer {
 
   // Dice thrown
   _tempDice: [number, number];
+
+  // Get the most recent dice throw
+  getDiceThrow(): number;
 
   // Methods to chain for paying a player, tax, or cards
   pay(amount: number): this;

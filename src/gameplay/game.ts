@@ -3,6 +3,7 @@ import { Dice } from "./dice";
 import { Board, IBoard, Property } from "./board";
 import { Player, IPlayer } from "./player";
 import { IStreet } from "./spaces/street";
+import { IRailRoad } from "./spaces/railroad";
 
 export const TOKENS = [
   "Scottish Terrier",
@@ -87,6 +88,25 @@ export class Game implements IGame {
 
     // Set property status from unclaimed to unimproved
     prop.upgrade();
+
+    // For railroad and utility, automatically upgrade having multiple
+    if (prop.type === SpaceType.Rail) {
+      // Find other rail roads the player owns
+      const otherRailRoads = this.playerToProps[player.id].filter(
+        (prop: Property) => prop.type === SpaceType.Rail
+      ) as IRailRoad[];
+
+      // If the player owns more than one rail road (the current rail road) 
+      // Then upgrade other rail road by one level
+      if (otherRailRoads.length > 1) {
+        otherRailRoads.forEach((railRoad: IRailRoad) => railRoad.upgrade());
+      }
+
+      // At last, upgrade the current railroad 
+      for (let i = 1; i < otherRailRoads.length; i++) {
+        prop.upgrade();
+      }
+    }
 
     // Return true for successful transaction
     return true;

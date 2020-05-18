@@ -5,7 +5,7 @@ export class Street implements IStreet {
   id: string;
   name: string;
   type: SpaceType;
-  rent: number;
+  _rent: number;
   mortgage: number;
   status: StreetStatus;
   houseCost: number;
@@ -17,7 +17,7 @@ export class Street implements IStreet {
   constructor(parameters: any) {
     this.id = uuidv4();
     this.name = parameters.name;
-    this.rent = parameters.rents[0];
+    this._rent = parameters.rents[0];
     this.type = SpaceType.Street;
     this.mortgage = parameters.mortgage;
     this.status = StreetStatus.Unclaimed;
@@ -30,42 +30,42 @@ export class Street implements IStreet {
 
   purchase(): void {
     this.status = StreetStatus.Unimproved;
-    this.rent = this.rents[1];
+    this._rent = this.rents[1];
   }
 
   getRent(): number {
-    return this.rent;
+    return this._rent;
   }
 
   upgrade(): void {
     if (this.status < StreetStatus.Hotel) {
       this.status++;
-      this.rent = this.rents[this.status];
+      this._rent = this.rents[this.status];
     }
   }
 
   downgrade(): void {
     if (this.status > StreetStatus.Unimproved) {
       this.status--;
-      this.rent = this.rents[this.status];
+      this._rent = this.rents[this.status];
     }
   }
 
   setMortgage(): void {
     this.status = StreetStatus.Mortgage;
-    this.rent = this.rents[StreetStatus.Unclaimed];
+    this._rent = this.rents[StreetStatus.Unclaimed];
   }
 
   // owning the same color the rent would double unimproved rent
   doubleRent(): void {
     if (this.status === StreetStatus.Unimproved) {
-      this.rent = 2 * this.rent;
+      this._rent = 2 * this._rent;
     }
   }
 
   resetRent(): void {
     if (this.status === StreetStatus.Unimproved) {
-      this.rent = this.rents[StreetStatus.Unimproved];
+      this._rent = this.rents[StreetStatus.Unimproved];
     }
   }
 }

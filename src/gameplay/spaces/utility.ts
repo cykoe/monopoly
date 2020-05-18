@@ -4,7 +4,7 @@ import { UtilityStatus, SpaceType, IProperty } from "../shared/interfaces";
 export class Utility implements IUtility {
   id: string;
   name: string;
-  rent: number;
+  _rent: number;
   mortgage: number;
   status: UtilityStatus;
   rents: number[];
@@ -14,7 +14,7 @@ export class Utility implements IUtility {
   constructor(parameters: any) {
     this.id = uuidv4();
     this.status = UtilityStatus.Unclaimed;
-    this.rent = parameters.rent;
+    this._rent = parameters.rent;
     this.name = parameters.name;
     this.mortgage = parameters.mortgage;
     this.rents = parameters.rents;
@@ -24,13 +24,16 @@ export class Utility implements IUtility {
 
   purchase(): void {
     this.status = UtilityStatus.OneUtility;
-    this.rent = this.rents[UtilityStatus.OneUtility];
+    this._rent = this.rents[UtilityStatus.OneUtility];
   }
 
   getRent(steps: number): number {
+    if(!steps) {
+      throw new Error('Steps is needed to calculate rent');
+    }
     if (this.status !== UtilityStatus.Mortgage) {
       // rent is equal to x amount times the dice rolls
-      return this.rents[this.status] * steps;
+      return this._rent * steps;
     } else {
       // if it's mortgaged, no rent fee
       return 0;
@@ -40,20 +43,20 @@ export class Utility implements IUtility {
   upgrade(): void {
     if (this.status < UtilityStatus.TwoUtility) {
       this.status++;
-      this.rent = this.rents[this.status];
+      this._rent = this.rents[this.status];
     }
   }
 
   downgrade(): void {
     if (this.status > UtilityStatus.OneUtility) {
       this.status--;
-      this.rent = this.rents[this.status];
+      this._rent = this.rents[this.status];
     }
   }
 
   setMortgage(): void {
     this.status = UtilityStatus.Mortgage;
-    this.rent = this.rents[UtilityStatus.Unclaimed];
+    this._rent = this.rents[UtilityStatus.Unclaimed];
   }
 }
 

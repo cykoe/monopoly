@@ -6,7 +6,7 @@ export class RailRoad implements IRailRoad {
   name: string;
   type: SpaceType;
   cost: number;
-  rent: number;
+  _rent: number;
   mortgage: number;
   status: RailRoadStatus;
   rents: number[];
@@ -18,37 +18,37 @@ export class RailRoad implements IRailRoad {
     this.name = parameters.name;
     this.mortgage = parameters.mortgage;
     this.rents = parameters.rents;
-    this.rent = parameters.rents[0];
+    this._rent = parameters.rents[0];
     this.cost = parameters.cost;
     this.type = SpaceType.Rail;
   }
 
   purchase(): void {
     this.status = RailRoadStatus.OneRail;
-    this.rent = this.rents[RailRoadStatus.OneRail];
+    this._rent = this.rents[RailRoadStatus.OneRail];
   }
 
   getRent(): number {
-    return this.rent;
+    return this._rent;
   }
 
   upgrade(): void {
     if (this.status < RailRoadStatus.FourRail) {
       this.status++;
-      this.rent = this.rents[this.status];
+      this._rent = this.rents[this.status];
     }
   }
 
   downgrade(): void {
     if (this.status > RailRoadStatus.OneRail) {
       this.status--;
-      this.rent = this.rents[this.status];
+      this._rent = this.rents[this.status];
     }
   }
 
   setMortgage(): void {
     this.status = RailRoadStatus.Mortgage;
-    this.rent = this.rents[RailRoadStatus.Unclaimed];
+    this._rent = this.rents[RailRoadStatus.Unclaimed];
   }
 }
 

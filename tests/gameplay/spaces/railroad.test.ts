@@ -15,7 +15,7 @@ describe("RailRoad", () => {
   test("purchase()", () => {
     railRoad.purchase();
 
-    expect(railRoad.rent).toEqual(railRoad.rents[RailRoadStatus.OneRail]);
+    expect(railRoad._rent).toEqual(railRoad.rents[RailRoadStatus.OneRail]);
     expect(railRoad.status).toEqual(RailRoadStatus.OneRail);
   });
 
@@ -27,7 +27,7 @@ describe("RailRoad", () => {
 
   test("upgrade()", () => {
     railRoad.status = RailRoadStatus.OneRail;
-    railRoad.rent = railRoad.rents[RailRoadStatus.OneRail];
+    railRoad._rent = railRoad.rents[RailRoadStatus.OneRail];
     railRoad.upgrade();
 
     expect(railRoad.status).toEqual(RailRoadStatus.TwoRail);
@@ -36,7 +36,7 @@ describe("RailRoad", () => {
 
   test("downgrade()", () => {
     railRoad.status = RailRoadStatus.TwoRail;
-    railRoad.rent = rrParam.rents[RailRoadStatus.TwoRail];
+    railRoad._rent = rrParam.rents[RailRoadStatus.TwoRail];
     railRoad.downgrade();
 
     expect(railRoad.status).toEqual(RailRoadStatus.OneRail);

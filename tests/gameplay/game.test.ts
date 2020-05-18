@@ -8,13 +8,18 @@ import {
   GO_MONEY,
 } from "../../src/gameplay/board";
 import { IStreet } from "../../src/gameplay/spaces/street";
+import { IRailRoad } from "../../src/gameplay/spaces/railroad";
+import {IUtility} from "../../src/gameplay/spaces/utility";
 
 let game: Game;
 let player1: IPlayer;
 let player2: IPlayer;
-let player3: IPlayer;
 let board: IBoard;
 const MEDITERRANEAN_AVE = 1;
+const READING_RR = 5;
+const PENNSYLVANIA_RR = 15;
+const ELECTRIC_COMPANY = 12;
+const WATER_WORKS = 28; 
 
 describe("Game", () => {
   describe("One player", () => {
@@ -29,19 +34,17 @@ describe("Game", () => {
     }).toThrow();
   });
 
-  describe("Three players", () => {
+  describe("Two players", () => {
     beforeEach(() => {
       // Create a game with three players
       const prePlayers: IPrePlayer[] = [
         { name: "player1", token: "token1" },
         { name: "player2", token: "token2" },
-        { name: "player3", token: "token3" },
       ];
       game = new Game({ prePlayers });
       game.start();
       player1 = game.getSnapshot().players[0];
       player2 = game.getSnapshot().players[1];
-      player3 = game.getSnapshot().players[2];
       board = game.getSnapshot().board;
     });
 
@@ -51,7 +54,7 @@ describe("Game", () => {
 
     test("Game created Ok", () => {
       // Check game is created successfully
-      expect(game.players).toHaveLength(3);
+      expect(game.players).toHaveLength(2);
       expect(player1).toHaveProperty("token");
       expect(board).toHaveProperty("spaces");
       expect(game.currentPlayer).toEqual(player1);
@@ -64,10 +67,6 @@ describe("Game", () => {
       // Advance to player2's turn
       game.next();
       expect(game.currentPlayer).toEqual(player2);
-
-      // Advance to player3's turn
-      game.next();
-      expect(game.currentPlayer).toEqual(player3);
 
       // Advance to player1's turn
       game.next();
@@ -127,7 +126,7 @@ describe("Game", () => {
         // to pay rent
         player2.throw(MEDITERRANEAN_AVE).move();
         const player2OriginalMoney = player2.money;
-        const rent = (board.spaces[MEDITERRANEAN_AVE] as IStreet).rent;
+        const rent = (board.spaces[MEDITERRANEAN_AVE] as IStreet).getRent();
         player2.pay(rent).player(player1);
 
         expect(player2.money).toEqual(player2OriginalMoney - rent);
@@ -258,10 +257,48 @@ describe("Game", () => {
         const player2StartMoney = player2.money;
 
         // Get the rent of the hotel
-        const rent = (board.spaces[player2.position] as IStreet).rent;
+        const rent = (board.spaces[player2.position] as IStreet).getRent();
         player2.pay(rent).player(player1);
         expect(player2.money).toEqual(player2StartMoney - rent);
         expect(player1.money).toEqual(player1StartMoney + rent);
+      });
+
+      test("Player1 buys two rail roads and player2 pays the rent", () => {
+        player1.throw(READING_RR).move();
+        game.playerBuyProp(player1);
+        player1.throw(PENNSYLVANIA_RR - READING_RR).move();
+        game.playerBuyProp(player1);
+        const player1StartMoney = player1.money;
+
+        player2.throw(READING_RR).move();
+        const rent = (board.spaces[player2.position] as IRailRoad).getRent();
+        const player2StartMoney = player2.money;
+        expect(rent).toEqual(50);
+
+        player2.pay(rent).player(player1);
+        expect(player2.money).toEqual(player2StartMoney - rent);
+        expect(player1.money).toEqual(player1StartMoney + rent);
+      });
+
+      test("Player1 buys two utilities and player2 pays the rent", () => {
+        const player1StartMoney = player1.money;
+        player1.throw(ELECTRIC_COMPANY).move();
+        game.playerBuyProp(player1);
+        const electric_company = board.spaces[player1.position] as IUtility;
+        player1.throw(WATER_WORKS - ELECTRIC_COMPANY).move();
+        game.playerBuyProp(player1);
+        const water_works = board.spaces[player1.position] as IUtility;
+        const player1AfterBuyingMoney = player1.money;
+        expect(player1.money).toEqual(player1StartMoney - electric_company.cost - water_works.cost);
+
+        player2.throw(ELECTRIC_COMPANY).move();
+        const rent = (board.spaces[player2.position] as IUtility).getRent(player2.getDiceThrow());
+        const player2StartMoney = player2.money;
+        expect(rent).toEqual(electric_company.getRent(player2.getDiceThrow()));
+
+        player2.pay(rent).player(player1);
+        expect(player2.money).toEqual(player2StartMoney - rent);
+        expect(player1.money).toEqual(player1AfterBuyingMoney + rent);
       });
     });
   });

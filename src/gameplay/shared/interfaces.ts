@@ -10,7 +10,7 @@ export interface ISpace {
 export interface IProperty extends ISpace {
   id: string;
   cost: number;
-  rent: number;
+  _rent: number;
   mortgage: number;
   // list of rents for each stage of the property
   rents: number[];
