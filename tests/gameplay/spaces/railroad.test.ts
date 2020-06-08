@@ -42,11 +42,4 @@ describe("RailRoad", () => {
     expect(railRoad.status).toEqual(RailRoadStatus.OneRail);
     expect(railRoad.getRent()).toEqual(railRoad.rents[RailRoadStatus.OneRail]);
   });
-
-  test("setMortgage()", () => {
-    railRoad.setMortgage();
-
-    expect(railRoad.status).toEqual(RailRoadStatus.Mortgage);
-    expect(railRoad.getRent()).toEqual(railRoad.rents[RailRoadStatus.Mortgage]);
-  });
 });

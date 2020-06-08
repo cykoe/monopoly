@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from "uuid";
-import { UtilityStatus, SpaceType, IProperty } from "../shared/interfaces";
+import {v4 as uuidv4} from "uuid";
+import {UtilityStatus, SpaceType, IProperty} from "../shared/interfaces";
 
 export class Utility implements IUtility {
   id: string;
@@ -28,8 +28,8 @@ export class Utility implements IUtility {
   }
 
   getRent(steps: number): number {
-    if(!steps) {
-      throw new Error('Steps is needed to calculate rent');
+    if (!steps) {
+      throw new Error("Steps is needed to calculate rent");
     }
     if (this.status !== UtilityStatus.Mortgage) {
       // rent is equal to x amount times the dice rolls
@@ -54,9 +54,16 @@ export class Utility implements IUtility {
     }
   }
 
-  setMortgage(): void {
+  setMortgage(): boolean {
+    if (
+      this.status === UtilityStatus.Mortgage ||
+      this.status === UtilityStatus.Unclaimed
+    ) {
+      return false;
+    }
     this.status = UtilityStatus.Mortgage;
     this._rent = this.rents[UtilityStatus.Unclaimed];
+    return true;
   }
 }
 

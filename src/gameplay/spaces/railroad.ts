@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from "uuid";
-import { RailRoadStatus, SpaceType, IProperty } from "../shared/interfaces";
+import {v4 as uuidv4} from "uuid";
+import {RailRoadStatus, SpaceType, IProperty} from "../shared/interfaces";
 
 export class RailRoad implements IRailRoad {
   id: string;
@@ -46,9 +46,16 @@ export class RailRoad implements IRailRoad {
     }
   }
 
-  setMortgage(): void {
+  setMortgage(): boolean {
+    if (
+      this.status === RailRoadStatus.Mortgage ||
+      this.status === RailRoadStatus.Unclaimed
+    ) {
+      return false;
+    }
     this.status = RailRoadStatus.Mortgage;
     this._rent = this.rents[RailRoadStatus.Unclaimed];
+    return true;
   }
 }
 

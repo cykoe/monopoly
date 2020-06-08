@@ -1,6 +1,7 @@
 import { Utility } from "../../../src/gameplay/spaces/utility";
 import { UtilityStatus } from "../../../src/gameplay/shared/interfaces";
 
+// TODO: integration test
 describe("Utility", () => {
   let utility: Utility;
   const uParam = {
@@ -45,11 +46,5 @@ describe("Utility", () => {
 
     expect(utility.status).toEqual(UtilityStatus.OneUtility);
     expect(utility._rent).toEqual(utility.rents[UtilityStatus.OneUtility]);
-  });
-
-  test("setMortgage", () => {
-    utility.setMortgage();
-    expect(utility._rent).toEqual(utility.rents[UtilityStatus.Mortgage]);
-    expect(utility.status).toEqual(UtilityStatus.Mortgage);
   });
 });

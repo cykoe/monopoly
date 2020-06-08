@@ -28,13 +28,16 @@ export class Street implements IStreet {
     this.rents = parameters.rents.map((r: number) => Number(r));
   }
 
-  purchase(): void {
-    this.status = StreetStatus.Unimproved;
-    this._rent = this.rents[1];
-  }
-
   getRent(): number {
     return this._rent;
+  }
+
+  purchase(): void {
+    if(this.status !== StreetStatus.Unclaimed) {
+      return;
+    }
+    this.status = StreetStatus.Unimproved;
+    this._rent = this.rents[this.status];
   }
 
   upgrade(): void {
@@ -51,9 +54,13 @@ export class Street implements IStreet {
     }
   }
 
-  setMortgage(): void {
+  setMortgage(): boolean {
+    if(this.status !== StreetStatus.Unimproved) {
+      return false;
+    }
     this.status = StreetStatus.Mortgage;
     this._rent = this.rents[StreetStatus.Unclaimed];
+    return true;
   }
 
   // owning the same color the rent would double unimproved rent

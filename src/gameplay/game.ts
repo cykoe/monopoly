@@ -4,6 +4,7 @@ import { Board, IBoard, Property } from "./board";
 import { Player, IPlayer } from "./player";
 import { IStreet } from "./spaces/street";
 import { IRailRoad } from "./spaces/railroad";
+import {IUtility} from "./spaces/utility";
 
 export const TOKENS = [
   "Scottish Terrier",
@@ -34,25 +35,23 @@ export class Game implements IGame {
   currentPlayer: IPlayer = {} as IPlayer;
   board: IBoard = {} as IBoard;
   dice: IDice;
-  prePlayers: IPrePlayer[] = [];
   numOfPlayers: number;
   tracker: number = 0;
   playerToProps: PlayerToProps;
   propToPlayer: PropToPlayer;
 
-  constructor(parameters: any) {
-    if (parameters.prePlayers.length < 2 || parameters.prePlayers.length > 8) {
+  constructor(parameters: { players: IPlayerRaw[] }) {
+    if (parameters.players.length < 2 || parameters.players.length > 8) {
       throw new Error("Players number must be 2-8");
     }
     this.dice = new Dice();
-    this.prePlayers = parameters.prePlayers;
-    this.numOfPlayers = this.prePlayers.length;
+    this.numOfPlayers = parameters.players.length;
     this.createBoard();
     this.playerToProps = {};
     this.propToPlayer = {};
     // Create players from parameters
-    this.players = this.prePlayers.map(
-      (player: IPrePlayer) =>
+    this.players = parameters.players.map(
+      (player: IPlayerRaw) =>
         new Player({
           name: player.name,
           money: START_MONEY,
@@ -63,9 +62,9 @@ export class Game implements IGame {
     this.setPlayerOrders();
   }
 
-  playerBuyProp(player: IPlayer): boolean {
+  playerBuyProperty(player: IPlayer): boolean {
     // Locate the property the player is currently on
-    const prop: Property = this.board.spaces[player.position] as Property;
+    const prop: IProperty = this.board.spaces[player.position] as IProperty;
 
     // If the player doesn't have the money to purchase the property,
     // or the property is already owned by somebody else, then this
@@ -90,19 +89,20 @@ export class Game implements IGame {
     prop.upgrade();
 
     // For railroad and utility, automatically upgrade having multiple
+    // TODO: add code for utility
     if (prop.type === SpaceType.Rail) {
       // Find other rail roads the player owns
       const otherRailRoads = this.playerToProps[player.id].filter(
-        (prop: Property) => prop.type === SpaceType.Rail
+        (p: IProperty) => (p.type === SpaceType.Rail) && (p.id !== prop.id)
       ) as IRailRoad[];
 
-      // If the player owns more than one rail road (the current rail road) 
+      // If the player owns more than one rail road (the current rail road)
       // Then upgrade other rail road by one level
-      if (otherRailRoads.length > 1) {
+      if (otherRailRoads.length) {
         otherRailRoads.forEach((railRoad: IRailRoad) => railRoad.upgrade());
       }
 
-      // At last, upgrade the current railroad 
+      // At last, upgrade the current railroad
       for (let i = 1; i < otherRailRoads.length; i++) {
         prop.upgrade();
       }
@@ -112,9 +112,9 @@ export class Game implements IGame {
     return true;
   }
 
-  playerUpgradeProp(player: IPlayer): boolean {
+  playerUpgradeProperty(player: IPlayer): boolean {
     // Locate the property the player is currently on
-    const prop: Property = this.board.spaces[player.position] as Property;
+    const prop: IProperty = this.board.spaces[player.position] as IProperty;
 
     // Check if the property is already owned by another player
     if (this.propToPlayer[prop.id] !== player) {
@@ -138,9 +138,9 @@ export class Game implements IGame {
     return true;
   }
 
-  playerDowngradeProp(player: IPlayer): boolean {
+  playerDowngradeProperty(player: IPlayer): boolean {
     // Locate the property the player is currently on
-    const prop: Property = this.board.spaces[player.position] as Property;
+    const prop: IProperty = this.board.spaces[player.position] as IProperty;
 
     // Check if the property is already owned by another player
     if (this.propToPlayer[prop.id] !== player) {
@@ -157,6 +157,37 @@ export class Game implements IGame {
     prop.downgrade();
 
     return true;
+  }
+
+  playerMortgageProperty(player: IPlayer): boolean {
+    // Locate the property the player in currently on
+    const prop: IProperty = this.board.spaces[player.position] as IProperty;
+
+    // Check if the property is already owned by another player
+    if (this.propToPlayer[prop.id] !== player) {
+      return false;
+    }
+
+    // If the property is a rail road or a utility, then we not only need to
+    // set this property as mortgaged, but also downgrade other rail roads or
+    // Utility if there are any
+    if (prop.type === SpaceType.Rail) {
+      const allRailRoads = this.playerToProps[player.id].filter((p: IProperty) => p.type === SpaceType.Rail) as IRailRoad[];
+
+      allRailRoads.forEach((railRoad: IRailRoad) => railRoad.downgrade());
+    }
+
+    if (prop.type === SpaceType.Utility) {
+      const allUtilities = this.playerToProps[player.id].filter((p: IProperty) => p.type === SpaceType.Utility) as IUtility[];
+
+      allUtilities.forEach((utility: IUtility) => utility.downgrade());
+    }
+
+    // Player receives the mortgage money
+    player.money += prop.mortgage;
+
+    // Mortage the property
+    return prop.setMortgage();
   }
 
   next(): void {
@@ -195,12 +226,12 @@ export interface ISnapshot {
   board: IBoard;
 }
 
-export interface IPrePlayer {
+export interface IPlayerRaw {
   name: string;
   token: string;
 }
 
-type PlayerToProps = { [playerId: string]: Property[] };
+type PlayerToProps = { [playerId: string]: IProperty[] };
 type PropToPlayer = { [propId: string]: IPlayer };
 
 export interface IGame {
@@ -208,15 +239,14 @@ export interface IGame {
   currentPlayer: IPlayer;
   board: IBoard;
   dice: IDice;
-  prePlayers: IPrePlayer[];
   playerToProps: PlayerToProps;
   propToPlayer: PropToPlayer;
   numOfPlayers: number;
   tracker: number;
 
-  playerBuyProp(player: IPlayer): boolean;
-  playerUpgradeProp(player: IPlayer): boolean;
-  playerDowngradeProp(player: IPlayer): boolean;
+  playerBuyProperty(player: IPlayer): boolean;
+  playerUpgradeProperty(player: IPlayer): boolean;
+  playerDowngradeProperty(player: IPlayer): boolean;
 
   // Proceed to the next player
   next(): void;

@@ -12,14 +12,14 @@ export interface IProperty extends ISpace {
   cost: number;
   _rent: number;
   mortgage: number;
-  // list of rents for each stage of the property
+  // List of rents for each stage of the property
   rents: number[];
 
   getRent(steps?: number): number;
   purchase(): void;
   upgrade(): void;
   downgrade(): void;
-  setMortgage(): void;
+  setMortgage(): boolean;
 }
 
 // TODO: make base change/community cards
