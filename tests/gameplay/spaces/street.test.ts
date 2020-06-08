@@ -266,20 +266,18 @@ describe("Street", () => {
           prop.mortgage
       );
     });
+
+    test("the property is mortgaged and she lifts it", () => {
+      game.playerMortgageProperty(chloe);
+      game.playerLiftMortgage(chloe);
+      const prop = board.spaces[chloe.position] as IStreet;
+
+      expect(prop.status).toEqual(StreetStatus.Unimproved);
+      expect(chloe.money).toEqual(chloeStartMoney - prop.cost - prop.interest);
+    });
+
+    test("the property is not mortgaged and she lifts it", () => {
+      expect(game.playerLiftMortgage(chloe)).toEqual(false);
+    });
   });
-  // TODO: write lifting the mortgage
-  //describe("Chloe lifts the mortgage", () => {
-    //let chloeStartMoney: number;
-    //beforeEach(() => {
-      //chloeStartMoney = chloe.money;
-      //chloe.throw(MEDITERRANEAN_AVE).move();
-      //game.playerBuyProperty(chloe);
-      //game.playerMortgageProperty(chloe);
-    //});
-
-    //test("the property is lifted", () => {
-       
-    //});
-
-  //});
 });

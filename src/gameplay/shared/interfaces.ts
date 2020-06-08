@@ -14,12 +14,15 @@ export interface IProperty extends ISpace {
   mortgage: number;
   // List of rents for each stage of the property
   rents: number[];
+  isMortgaged: boolean;
+  interest: number; 
 
   getRent(steps?: number): number;
   purchase(): void;
   upgrade(): void;
   downgrade(): void;
   setMortgage(): boolean;
+  liftMortgage(): boolean;
 }
 
 // TODO: make base change/community cards
@@ -35,6 +38,7 @@ export interface ITax extends ISpace {
   amount: number;
 }
 
+// TODO: move mortgage to the first element
 export enum StreetStatus {
   Unclaimed,
   Unimproved,

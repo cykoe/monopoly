@@ -86,7 +86,7 @@ export class Game implements IGame {
     this.propToPlayer[prop.id] = player;
 
     // Set property status from unclaimed to unimproved
-    prop.upgrade();
+    prop.purchase();
 
     // For railroad and utility, automatically upgrade having multiple
     // TODO: add code for utility
@@ -188,6 +188,24 @@ export class Game implements IGame {
 
     // Mortage the property
     return prop.setMortgage();
+  }
+
+  playerLiftMortgage(player: IPlayer): boolean {
+    // Locate the property the player in currently on
+    const prop: IProperty = this.board.spaces[player.position] as IProperty;
+
+    if(!prop.isMortgaged || this.propToPlayer[prop.id] !== player) {
+      return false;
+    }
+
+    if(player.money < prop.mortgage + prop.interest) {
+      return false;
+    } 
+
+    // Deduct property mortgage and interest from the player
+    player.money -= prop.mortgage + prop.interest;
+
+    return prop.liftMortgage();
   }
 
   next(): void {

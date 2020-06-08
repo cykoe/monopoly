@@ -1,6 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
 import { StreetStatus, SpaceType, IProperty } from "../shared/interfaces";
 
+const MORTGAGE_INTEREST = 0.1;
+
 export class Street implements IStreet {
   id: string;
   name: string;
@@ -13,6 +15,8 @@ export class Street implements IStreet {
   hotelCost: number;
   cost: number;
   rents: number[];
+  isMortgaged: boolean;
+  interest: number;
 
   constructor(parameters: any) {
     this.id = uuidv4();
@@ -26,6 +30,8 @@ export class Street implements IStreet {
     this.hotelCost = Number(parameters.hotelCost);
     this.cost = Number(parameters.cost);
     this.rents = parameters.rents.map((r: number) => Number(r));
+    this.isMortgaged = false;
+    this.interest = this.mortgage * MORTGAGE_INTEREST;
   }
 
   getRent(): number {
@@ -60,6 +66,17 @@ export class Street implements IStreet {
     }
     this.status = StreetStatus.Mortgage;
     this._rent = this.rents[StreetStatus.Unclaimed];
+    this.isMortgaged = true;
+    return true;
+  }
+
+  liftMortgage(): boolean {
+    if(!this.isMortgaged) {
+      return false;
+    }
+    this.status = StreetStatus.Unimproved;
+    this._rent = this.rents[StreetStatus.Unimproved];
+    this.isMortgaged = false;
     return true;
   }
 
