@@ -1,12 +1,12 @@
 import * as data from "../assets/board.json";
-import { IChance, ICommunity, ITax, ISpace } from "./shared/interfaces";
-import { IStreet, Street } from "./spaces/street";
-import { IRailRoad, RailRoad } from "./spaces/railroad";
-import { Utility, IUtility } from "./spaces/utility";
-import { Chance } from "./spaces/chance";
-import { Community } from "./spaces/community";
-import { Tax } from "./spaces/tax";
-import { Corner } from "./spaces/corners";
+import {IChance, ICommunity, ITax, ISpace} from "./shared/interfaces";
+import {IStreet, Street} from "./spaces/street";
+import {IRailRoad, RailRoad} from "./spaces/railroad";
+import {Utility, IUtility} from "./spaces/utility";
+import {Chance} from "./spaces/chance";
+import {Community} from "./spaces/community";
+import {Tax} from "./spaces/tax";
+import {Corner} from "./spaces/corners";
 
 // Total number of spaces in the game
 export const TOTAL_STEPS = 40;
@@ -88,7 +88,7 @@ function parseData(): Space[] {
         cost = d["Price"];
         name = d["Name"];
 
-        const railroad = new RailRoad({ name, cost, rents, mortgage });
+        const railroad = new RailRoad({name, cost, rents, mortgage});
         result.push(railroad);
         break;
       case "Utility":
@@ -98,29 +98,29 @@ function parseData(): Space[] {
         cost = d["Price"];
         name = d["Name"];
 
-        const utility = new Utility({ name, cost, rents, mortgage });
+        const utility = new Utility({name, cost, rents, mortgage});
         result.push(utility);
         break;
       case "Chance":
-        result.push(new Chance({name: d['Name']}));
+        result.push(new Chance({name: d["Name"]}));
         break;
       case "Chest":
-        result.push(new Community({name: d['Name']}));
+        result.push(new Community({name: d["Name"]}));
         break;
       case "Tax":
-        result.push(new Tax({ amount: d["Rent"], name: d['Name'] }));
+        result.push(new Tax({amount: d["Rent"], name: d["Name"]}));
         break;
       case "Jail":
-        result.push(new Corner({ spaceType: "Jail", name: d["Name"] }));
+        result.push(new Corner({spaceType: "Jail", name: d["Name"]}));
         break;
       case "GoToJail":
-        result.push(new Corner({ spaceType: "GoToJail", name: d["Name"] }));
+        result.push(new Corner({spaceType: "GoToJail", name: d["Name"]}));
         break;
       case "Go":
-        result.push(new Corner({ spaceType: "Go", name: d["Name"] }));
+        result.push(new Corner({spaceType: "Go", name: d["Name"]}));
         break;
       case "Parking":
-        result.push(new Corner({ spaceType: "Parking", name: d["Name"] }));
+        result.push(new Corner({spaceType: "Parking", name: d["Name"]}));
         break;
       default:
         break;

@@ -1,6 +1,8 @@
 import {v4 as uuidv4} from "uuid";
 import {RailRoadStatus, SpaceType, IProperty} from "../shared/interfaces";
 
+const MORTGAGE_INTEREST = 0.1;
+
 export class RailRoad implements IRailRoad {
   id: string;
   name: string;
@@ -10,6 +12,8 @@ export class RailRoad implements IRailRoad {
   mortgage: number;
   status: RailRoadStatus;
   rents: number[];
+  interest: number;
+  isMortgaged: boolean;
 
   constructor(parameters: any) {
     this.id = uuidv4();
@@ -21,6 +25,12 @@ export class RailRoad implements IRailRoad {
     this._rent = parameters.rents[0];
     this.cost = parameters.cost;
     this.type = SpaceType.Rail;
+    this.interest = MORTGAGE_INTEREST;
+    this.isMortgaged = false;
+  }
+
+  liftMortgage(): boolean {
+    return true;
   }
 
   purchase(): void {

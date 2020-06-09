@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from "uuid";
-import { StreetStatus, SpaceType, IProperty } from "../shared/interfaces";
+import {v4 as uuidv4} from "uuid";
+import {StreetStatus, SpaceType, IProperty} from "../shared/interfaces";
 
 const MORTGAGE_INTEREST = 0.1;
 
@@ -39,7 +39,7 @@ export class Street implements IStreet {
   }
 
   purchase(): void {
-    if(this.status !== StreetStatus.Unclaimed) {
+    if (this.status !== StreetStatus.Unclaimed) {
       return;
     }
     this.status = StreetStatus.Unimproved;
@@ -61,7 +61,7 @@ export class Street implements IStreet {
   }
 
   setMortgage(): boolean {
-    if(this.status !== StreetStatus.Unimproved) {
+    if (this.status !== StreetStatus.Unimproved) {
       return false;
     }
     this.status = StreetStatus.Mortgage;
@@ -71,7 +71,7 @@ export class Street implements IStreet {
   }
 
   liftMortgage(): boolean {
-    if(!this.isMortgaged) {
+    if (!this.isMortgaged) {
       return false;
     }
     this.status = StreetStatus.Unimproved;
