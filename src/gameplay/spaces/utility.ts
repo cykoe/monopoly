@@ -1,6 +1,8 @@
 import {v4 as uuidv4} from "uuid";
 import {UtilityStatus, SpaceType, IProperty} from "../shared/interfaces";
 
+const MORTGAGE_INTEREST = 0.1;
+
 export class Utility implements IUtility {
   id: string;
   name: string;
@@ -10,6 +12,8 @@ export class Utility implements IUtility {
   rents: number[];
   cost: number;
   type: SpaceType;
+  isMortgaged: boolean;
+  interest: number;
 
   constructor(parameters: any) {
     this.id = uuidv4();
@@ -20,6 +24,12 @@ export class Utility implements IUtility {
     this.rents = parameters.rents;
     this.cost = parameters.cost;
     this.type = SpaceType.Utility;
+    this.isMortgaged = false;
+    this.interest = MORTGAGE_INTEREST;
+  }
+
+  liftMortgage(): boolean {
+    return true;
   }
 
   purchase(): void {
