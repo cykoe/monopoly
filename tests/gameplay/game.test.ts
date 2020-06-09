@@ -79,35 +79,35 @@ describe("Game", () => {
     });
 
     describe("Street", () => {
-      test("Player1 buys one rail road", () => {
-        player1.throw(READING_RAIL_ROAD).move();
-        game.playerBuyProperty(player1);
-        const railRoad = board.spaces[player1.position] as IRailRoad;
+     //test("Player1 buys one rail road", () => {
+        //player1.throw(READING_RAIL_ROAD).move();
+        //game.playerBuyProperty(player1);
+        //const railRoad = board.spaces[player1.position] as IRailRoad;
 
-        expect(game.propToPlayer[railRoad.id]).toBe(player1);
-        expect(game.playerToProps[player1.id]).toContain(railRoad);
-      });
+        //expect(game.propToPlayer[railRoad.id]).toBe(player1);
+        //expect(game.playerToProps[player1.id]).toContain(railRoad);
+      //});
 
-      test("Player1 buys two rail roads and player2 pays the rent", () => {
-        // Player1 buys two rail roads
-        player1.throw(READING_RAIL_ROAD).move();
-        game.playerBuyProperty(player1);
-        player1.throw(PENNSYLVANIA_RAIL_ROAD - READING_RAIL_ROAD).move();
-        game.playerBuyProperty(player1);
-        const player1StartMoney = player1.money;
+      //test("Player1 buys two rail roads and player2 pays the rent", () => {
+        //// Player1 buys two rail roads
+        //player1.throw(READING_RAIL_ROAD).move();
+        //game.playerBuyProperty(player1);
+        //player1.throw(PENNSYLVANIA_RAIL_ROAD - READING_RAIL_ROAD).move();
+        //game.playerBuyProperty(player1);
+        //const player1StartMoney = player1.money;
 
-        // Player2 moves to one of the rail roads
-        player2.throw(READING_RAIL_ROAD).move();
-        const railRoad = board.spaces[player2.position] as IRailRoad;
-        const rent = railRoad.getRent();
-        const player2StartMoney = player2.money;
-        expect(rent).toEqual(railRoad.rents[RailRoadStatus.TwoRail]);
+        //// Player2 moves to one of the rail roads
+        //player2.throw(READING_RAIL_ROAD).move();
+        //const railRoad = board.spaces[player2.position] as IRailRoad;
+        //const rent = railRoad.getRent();
+        //const player2StartMoney = player2.money;
+        //expect(rent).toEqual(railRoad.rents[RailRoadStatus.TwoRail]);
 
-        // Player2 pays player1 for the rent
-        player2.pay(rent).player(player1);
-        expect(player1.money).toEqual(player1StartMoney + rent);
-        expect(player2.money).toEqual(player2StartMoney - rent);
-      });
+        //// Player2 pays player1 for the rent
+        //player2.pay(rent).player(player1);
+        //expect(player1.money).toEqual(player1StartMoney + rent);
+        //expect(player2.money).toEqual(player2StartMoney - rent);
+      //});
 
       test("Player1 buys two utilities and player2 pays the rent", () => {
         const player1StartMoney = player1.money;

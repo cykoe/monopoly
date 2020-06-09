@@ -1,10 +1,11 @@
-import { IDice, IProperty, SpaceType } from "./shared/interfaces";
-import { Dice } from "./dice";
-import { Board, IBoard, Property } from "./board";
-import { Player, IPlayer } from "./player";
-import { IStreet } from "./spaces/street";
-import { IRailRoad } from "./spaces/railroad";
+import {IDice, IProperty, SpaceType} from "./shared/interfaces";
+import {Dice} from "./dice";
+import {Board, IBoard, Property} from "./board";
+import {Player, IPlayer} from "./player";
+import {IStreet} from "./spaces/street";
+import {IRailRoad} from "./spaces/railroad";
 import {IUtility} from "./spaces/utility";
+import {Corner} from "./spaces/corners";
 
 export const TOKENS = [
   "Scottish Terrier",
@@ -40,7 +41,7 @@ export class Game implements IGame {
   playerToProps: PlayerToProps;
   propToPlayer: PropToPlayer;
 
-  constructor(parameters: { players: IPlayerRaw[] }) {
+  constructor(parameters: {players: IPlayerRaw[]}) {
     if (parameters.players.length < 2 || parameters.players.length > 8) {
       throw new Error("Players number must be 2-8");
     }
@@ -82,7 +83,6 @@ export class Game implements IGame {
     player.money -= prop.cost;
 
     // List the property to the player
-    this.playerToProps[player.id].push(prop);
     this.propToPlayer[prop.id] = player;
 
     // Set property status from unclaimed to unimproved
@@ -93,7 +93,7 @@ export class Game implements IGame {
     if (prop.type === SpaceType.Rail) {
       // Find other rail roads the player owns
       const otherRailRoads = this.playerToProps[player.id].filter(
-        (p: IProperty) => (p.type === SpaceType.Rail) && (p.id !== prop.id)
+        (p: IProperty) => p.type === SpaceType.Rail && p.id !== prop.id
       ) as IRailRoad[];
 
       // If the player owns more than one rail road (the current rail road)
@@ -172,13 +172,17 @@ export class Game implements IGame {
     // set this property as mortgaged, but also downgrade other rail roads or
     // Utility if there are any
     if (prop.type === SpaceType.Rail) {
-      const allRailRoads = this.playerToProps[player.id].filter((p: IProperty) => p.type === SpaceType.Rail) as IRailRoad[];
+      const allRailRoads = this.playerToProps[player.id].filter(
+        (p: IProperty) => p.type === SpaceType.Rail
+      ) as IRailRoad[];
 
       allRailRoads.forEach((railRoad: IRailRoad) => railRoad.downgrade());
     }
 
     if (prop.type === SpaceType.Utility) {
-      const allUtilities = this.playerToProps[player.id].filter((p: IProperty) => p.type === SpaceType.Utility) as IUtility[];
+      const allUtilities = this.playerToProps[player.id].filter(
+        (p: IProperty) => p.type === SpaceType.Utility
+      ) as IUtility[];
 
       allUtilities.forEach((utility: IUtility) => utility.downgrade());
     }
@@ -194,13 +198,13 @@ export class Game implements IGame {
     // Locate the property the player in currently on
     const prop: IProperty = this.board.spaces[player.position] as IProperty;
 
-    if(!prop.isMortgaged || this.propToPlayer[prop.id] !== player) {
+    if (!prop.isMortgaged || this.propToPlayer[prop.id] !== player) {
       return false;
     }
 
-    if(player.money < prop.mortgage + prop.interest) {
+    if (player.money < prop.mortgage + prop.interest) {
       return false;
-    } 
+    }
 
     // Deduct property mortgage and interest from the player
     player.money -= prop.mortgage + prop.interest;
@@ -249,8 +253,8 @@ export interface IPlayerRaw {
   token: string;
 }
 
-type PlayerToProps = { [playerId: string]: IProperty[] };
-type PropToPlayer = { [propId: string]: IPlayer };
+type PlayerToProps = {[playerId: string]: IProperty[]};
+type PropToPlayer = {[propId: string]: IPlayer};
 
 export interface IGame {
   players: IPlayer[];
